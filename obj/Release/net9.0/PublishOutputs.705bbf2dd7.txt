@@ -1,0 +1,11 @@
+C:\Users\Martin\Documents\Projects\4d_julia_set\bin\Release\net9.0\publish\4d_julia_set.exe
+C:\Users\Martin\Documents\Projects\4d_julia_set\bin\Release\net9.0\publish\4d_julia_set.dll
+C:\Users\Martin\Documents\Projects\4d_julia_set\bin\Release\net9.0\publish\4d_julia_set.deps.json
+C:\Users\Martin\Documents\Projects\4d_julia_set\bin\Release\net9.0\publish\4d_julia_set.runtimeconfig.json
+C:\Users\Martin\Documents\Projects\4d_julia_set\bin\Release\net9.0\publish\4d_julia_set.pdb
+C:\Users\Martin\Documents\Projects\4d_julia_set\bin\Release\net9.0\publish\Raylib-cs.dll
+C:\Users\Martin\Documents\Projects\4d_julia_set\bin\Release\net9.0\publish\runtimes\linux-x64\native\libraylib.so
+C:\Users\Martin\Documents\Projects\4d_julia_set\bin\Release\net9.0\publish\runtimes\osx-arm64\native\libraylib.dylib
+C:\Users\Martin\Documents\Projects\4d_julia_set\bin\Release\net9.0\publish\runtimes\osx-x64\native\libraylib.dylib
+C:\Users\Martin\Documents\Projects\4d_julia_set\bin\Release\net9.0\publish\runtimes\win-x64\native\raylib.dll
+C:\Users\Martin\Documents\Projects\4d_julia_set\bin\Release\net9.0\publish\runtimes\win-x86\native\raylib.dll

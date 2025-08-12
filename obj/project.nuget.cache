@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "d9nWLFdg8/Q=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Martin\\Documents\\Projects\\4d_julia_set\\4d_julia_set.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Martin\\.nuget\\packages\\raylib-cs\\7.0.1\\raylib-cs.7.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}
