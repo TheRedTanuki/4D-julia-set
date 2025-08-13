@@ -31,25 +31,10 @@ uniform float aspectRatio = 1.0;
 
 //-- Quaternion operations --//
 
-vec4 quatMult(vec4 q1, vec4 q2) {
-    vec4 r;
-    r.x = q1.x * q2.x - dot(q1.yzw, q2.yzw);
-
-    r.yzw = q1.x * q2.yzw + q2.x * q1.yzw + cross(q1.yzw, q2.yzw);
-    return r;
-}
-
-vec4 quatSquare(vec4 q) {
-    vec4 r;
-    r.x = q.x * q.x - dot(q.yzw, q.yzw);
-    r.yzw = 2.0 * q.x * q.yzw;
-    return r;
-}
-
 void iterateQuat(inout vec4 z, inout vec4 dz) {
     for (int i = 0; i < maxIteration; i++) {
-        dz = 2.0 * quatMult(z, dz);
-        z = quatSquare(z) + c;
+        dz = 2.0 * vec4(z.x * dz.x - dot(z.yzw, dz.yzw), z.x * dz.yzw + dz.x * z.yzw + cross(z.yzw, dz.yzw));
+        z = vec4(z.x * z.x - dot(z.yzw, z.yzw), 2.0 * z.x * z.yzw) + c;
         if (dot(z, z) > escapeThreshold) break;
     }
 }
