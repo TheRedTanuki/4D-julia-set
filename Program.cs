@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 using Raylib_cs;
 class Program
 {
@@ -10,6 +11,7 @@ class Program
         int width = Raylib.GetScreenWidth();
         int height = Raylib.GetScreenHeight();
         float aspectRatio = width / height;
+        float fov = 1.5f;
 
         Shader shader = Raylib.LoadShader(null, "ressources/julia_shader.glsl");
         RenderTexture2D target = Raylib.LoadRenderTexture(width, height);
@@ -17,30 +19,30 @@ class Program
         Vector3 cameraPosition = new (5.0f, 0.0f, 0.0f);
         Vector2 cameraAngle = new (0f, 0f);
 
-        Vector4 c = new (-0.2f, 0.7f, 0.5f, 0.0f);
+        Vector4 c = new (0.2f, 0.7f, 0.5f, 0.0f);
 
         int cameraPositionLocation = Raylib.GetShaderLocation(shader, "cameraPosition");
         int cameraForwardLocation = Raylib.GetShaderLocation(shader, "cameraForward");
         int cameraRightLocation = Raylib.GetShaderLocation(shader, "cameraRight");
         int cameraUpLocation = Raylib.GetShaderLocation(shader, "cameraUp");
-        int aspectRatioLocation = Raylib.GetShaderLocation(shader, "aspectRatio");
 
         float rotationAngle = 0f;
 
         int cLocation = Raylib.GetShaderLocation(shader, "c");
 
         Raylib.SetTargetFPS(60);
-        Raylib.SetShaderValue(shader, aspectRatioLocation, aspectRatio, ShaderUniformDataType.Float);
-        // Raylib.HideCursor();
-        // Raylib.SetMousePosition((int)MathF.Round(width / 2f), (int)MathF.Round(height / 2f));
+        //Raylib.HideCursor();
+        //Raylib.SetMousePosition((int)MathF.Round(width / 2f), (int)MathF.Round(height / 2f));
 
         while (!Raylib.WindowShouldClose())
         {
             if (Raylib.IsWindowResized())
             {
                 Raylib.UnloadRenderTexture(target);
-                target = Raylib.LoadRenderTexture(Raylib.GetScreenWidth(), Raylib.GetScreenHeight());
-                Raylib.SetShaderValue(shader, aspectRatioLocation, aspectRatio, ShaderUniformDataType.Float);
+                width = Raylib.GetScreenWidth();
+                height = Raylib.GetScreenHeight();
+                target = Raylib.LoadRenderTexture(width, height);
+                aspectRatio = width / height;
             }
 
             var deltaTime = Raylib.GetFrameTime();
@@ -52,6 +54,8 @@ class Program
             //Raylib.SetMousePosition((int)MathF.Round(width / 2f), (int)MathF.Round(height / 2f));
 
             // Angles
+            /*float yaw = cameraAngle[0];
+            float pitch = cameraAngle[1];*/
             float yaw = rotationAngle;
             float pitch = 0f;
 
@@ -73,12 +77,13 @@ class Program
             if (Raylib.IsKeyDown(KeyboardKey.A)) cameraPosition -= 5f * deltaTime * cameraRight;
 
             cameraPosition = new(5 * MathF.Cos(rotationAngle), 0f, 5 * MathF.Sin(rotationAngle));
+            float scale = MathF.Tan(fov * 0.5f);
 
             Raylib.SetShaderValue(shader, cameraPositionLocation, cameraPosition, ShaderUniformDataType.Vec3);
 
             Raylib.SetShaderValue(shader, cameraForwardLocation, cameraForward, ShaderUniformDataType.Vec3);
-            Raylib.SetShaderValue(shader, cameraRightLocation, cameraRight, ShaderUniformDataType.Vec3);
-            Raylib.SetShaderValue(shader, cameraUpLocation, cameraUp, ShaderUniformDataType.Vec3);
+            Raylib.SetShaderValue(shader, cameraRightLocation, Vector3.Multiply(scale * aspectRatio, cameraRight), ShaderUniformDataType.Vec3);
+            Raylib.SetShaderValue(shader, cameraUpLocation, Vector3.Multiply(scale, cameraUp), ShaderUniformDataType.Vec3);
 
             if (Raylib.IsKeyDown(KeyboardKey.Y)) c[0] += 1f * deltaTime;
             if (Raylib.IsKeyDown(KeyboardKey.T)) c[0] -= 1f * deltaTime;
