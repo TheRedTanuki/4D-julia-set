@@ -8,7 +8,7 @@ out vec4 fragColor;
 
 // Basic variables
 uniform float escapeThreshold = 100.0;
-uniform float raymarchingPrecision = 0.001;
+uniform float raymarchingPrecision = 0.0001;
 uniform float boundingSphereRadius = 100.0;
 uniform int maxIteration = 50;
 uniform int maxSteps = 128;
@@ -67,14 +67,17 @@ float distanceToJulia(vec3 p) {
 //-- Raymarch --//
 
 vec4 raymarch(vec3 rayOrigin, vec3 rayDirection) {
+    float dist;
+    float minDist = distanceToJulia(rayOrigin);
     while (true) {
-        float dist = distanceToJulia(rayOrigin);
+        dist = distanceToJulia(rayOrigin);
+        if (dist<minDist) minDist = dist;
         if (dist < raymarchingPrecision) {
             return vec4(normalize(rayOrigin.xyz), 1.0); // return a color based on the 3D coordinates
         }
         
         if (dot(rayOrigin, rayOrigin) > boundingSphereRadius) {
-            return vec4(0.0, 0.0, 0.0, 1.0);
+            return vec4(vec3(1.0 - (minDist - raymarchingPrecision)*100), 1.0);
         }
         
         rayOrigin += rayDirection * dist;

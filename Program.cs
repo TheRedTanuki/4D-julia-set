@@ -6,7 +6,7 @@ class Program
     {
         Raylib.SetWindowState(ConfigFlags.ResizableWindow);
         Raylib.InitWindow(0, 0, "Julia");
-        
+
         int width = Raylib.GetScreenWidth();
         int height = Raylib.GetScreenHeight();
         float aspectRatio = width / height;
@@ -17,15 +17,22 @@ class Program
         Vector3 cameraPosition = new (5.0f, 0.0f, 0.0f);
         Vector2 cameraAngle = new (0f, 0f);
 
+        Vector4 c = new (-0.2f, 0.7f, 0.5f, 0.0f);
+
         int cameraPositionLocation = Raylib.GetShaderLocation(shader, "cameraPosition");
         int cameraForwardLocation = Raylib.GetShaderLocation(shader, "cameraForward");
         int cameraRightLocation = Raylib.GetShaderLocation(shader, "cameraRight");
         int cameraUpLocation = Raylib.GetShaderLocation(shader, "cameraUp");
         int aspectRatioLocation = Raylib.GetShaderLocation(shader, "aspectRatio");
 
+        float rotationAngle = 0f;
+
+        int cLocation = Raylib.GetShaderLocation(shader, "c");
+
         Raylib.SetTargetFPS(60);
         Raylib.SetShaderValue(shader, aspectRatioLocation, aspectRatio, ShaderUniformDataType.Float);
-        Raylib.HideCursor();
+        // Raylib.HideCursor();
+        // Raylib.SetMousePosition((int)MathF.Round(width / 2f), (int)MathF.Round(height / 2f));
 
         while (!Raylib.WindowShouldClose())
         {
@@ -42,11 +49,11 @@ class Program
 
             cameraAngle[0] += Raylib.GetMouseDelta()[0] * deltaTime / 2;
             cameraAngle[1] -= Raylib.GetMouseDelta()[1] * deltaTime / 2;
-            Raylib.SetMousePosition((int)MathF.Round(width / 2f), (int)MathF.Round(height / 2f));
+            //Raylib.SetMousePosition((int)MathF.Round(width / 2f), (int)MathF.Round(height / 2f));
 
             // Angles
-            float yaw = cameraAngle[0];
-            float pitch = cameraAngle[1];
+            float yaw = rotationAngle;
+            float pitch = 0f;
 
             // Forward
             Vector3 cameraForward = Vector3.Normalize(new(
@@ -65,11 +72,29 @@ class Program
             if (Raylib.IsKeyDown(KeyboardKey.D)) cameraPosition += 5f * deltaTime * cameraRight;
             if (Raylib.IsKeyDown(KeyboardKey.A)) cameraPosition -= 5f * deltaTime * cameraRight;
 
+            cameraPosition = new(5 * MathF.Cos(rotationAngle), 0f, 5 * MathF.Sin(rotationAngle));
+
             Raylib.SetShaderValue(shader, cameraPositionLocation, cameraPosition, ShaderUniformDataType.Vec3);
 
             Raylib.SetShaderValue(shader, cameraForwardLocation, cameraForward, ShaderUniformDataType.Vec3);
             Raylib.SetShaderValue(shader, cameraRightLocation, cameraRight, ShaderUniformDataType.Vec3);
             Raylib.SetShaderValue(shader, cameraUpLocation, cameraUp, ShaderUniformDataType.Vec3);
+
+            if (Raylib.IsKeyDown(KeyboardKey.Y)) c[0] += 1f * deltaTime;
+            if (Raylib.IsKeyDown(KeyboardKey.T)) c[0] -= 1f * deltaTime;
+            if (Raylib.IsKeyDown(KeyboardKey.I)) c[1] += 1f * deltaTime;
+            if (Raylib.IsKeyDown(KeyboardKey.U)) c[1] -= 1f * deltaTime;
+            if (Raylib.IsKeyDown(KeyboardKey.P)) c[2] += 1f * deltaTime;
+            if (Raylib.IsKeyDown(KeyboardKey.O)) c[2] -= 1f * deltaTime;
+            if (Raylib.IsKeyDown(KeyboardKey.J)) c[3] += 1f * deltaTime;
+            if (Raylib.IsKeyDown(KeyboardKey.H)) c[3] -= 1f * deltaTime;
+
+            c[0] = -0.2f + 0.2f * MathF.Sin(2f * rotationAngle);
+            c[1] = 0.7f + 0.1f * MathF.Sin(rotationAngle);
+            c[2] = 0.3f * MathF.Sin(0.5f * rotationAngle);
+
+            Raylib.SetShaderValue(shader, cLocation, c, ShaderUniformDataType.Vec4);
+
 
             //-- Drawing textures --//
 
@@ -84,7 +109,8 @@ class Program
             Raylib.EndDrawing();
 
             // Optional : print fps
-            //Console.WriteLine(Raylib.GetFPS());
+            Console.WriteLine(Raylib.GetFPS());
+            rotationAngle += 0.01f;
         }
 
         Raylib.UnloadShader(shader);

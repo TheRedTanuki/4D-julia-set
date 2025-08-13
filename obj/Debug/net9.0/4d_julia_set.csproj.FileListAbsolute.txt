@@ -20,3 +20,4 @@ C:\Users\Martin\Documents\Projects\4d_julia_set\obj\Debug\net9.0\refint\4d_julia
 C:\Users\Martin\Documents\Projects\4d_julia_set\obj\Debug\net9.0\4d_julia_set.pdb
 C:\Users\Martin\Documents\Projects\4d_julia_set\obj\Debug\net9.0\4d_julia_set.genruntimeconfig.cache
 C:\Users\Martin\Documents\Projects\4d_julia_set\obj\Debug\net9.0\ref\4d_julia_set.dll
+C:\Users\Martin\Documents\Projects\4d_julia_set\obj\Debug\net9.0\4d_julia_set.sourcelink.json
