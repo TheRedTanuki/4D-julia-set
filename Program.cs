@@ -1,10 +1,8 @@
 ﻿using System.Numerics;
 using System.Reflection.Metadata.Ecma335;
 using Raylib_cs;
-class Program
-{
-    static void Main()
-    {
+class Program {
+    static void Main() {
         Raylib.SetWindowState(ConfigFlags.ResizableWindow);
         Raylib.InitWindow(0, 0, "Julia");
 
@@ -27,17 +25,30 @@ class Program
         int cameraUpLocation = Raylib.GetShaderLocation(shader, "cameraUp");
 
         float rotationAngle = 0f;
+        int colorGradientLocation = Raylib.GetShaderLocation(shader, "colorGradient");
+        Vector3[] colorGradient = {
+            new (0.227f, 0.165f, 0.549f),
+            new (0.396f, 0.258f, 0.584f),
+            new (0.561f, 0.349f, 0.619f),
+            new (0.674f, 0.322f, 0.506f),
+            new (0.784f, 0.290f, 0.392f),
+            new (0.855f, 0.266f, 0.313f),
+            new (0.886f, 0.349f, 0.298f),
+            new (0.918f, 0.431f, 0.282f),
+            new (0.949f, 0.533f, 0.271f),
+            new (0.980f, 0.631f, 0.259f)
+        };
+
+        Raylib.SetShaderValueV(shader, colorGradientLocation, colorGradient, ShaderUniformDataType.Vec3, colorGradient.Length);
 
         int cLocation = Raylib.GetShaderLocation(shader, "c");
 
         Raylib.SetTargetFPS(60);
-        //Raylib.HideCursor();
-        //Raylib.SetMousePosition((int)MathF.Round(width / 2f), (int)MathF.Round(height / 2f));
+        Raylib.HideCursor();
+        Raylib.SetMousePosition((int)MathF.Round(width / 2f), (int)MathF.Round(height / 2f));
 
-        while (!Raylib.WindowShouldClose())
-        {
-            if (Raylib.IsWindowResized())
-            {
+        while (!Raylib.WindowShouldClose()) {
+            if (Raylib.IsWindowResized()) {
                 Raylib.UnloadRenderTexture(target);
                 width = Raylib.GetScreenWidth();
                 height = Raylib.GetScreenHeight();
@@ -51,13 +62,13 @@ class Program
 
             cameraAngle[0] += Raylib.GetMouseDelta()[0] * deltaTime / 2;
             cameraAngle[1] -= Raylib.GetMouseDelta()[1] * deltaTime / 2;
-            //Raylib.SetMousePosition((int)MathF.Round(width / 2f), (int)MathF.Round(height / 2f));
+            Raylib.SetMousePosition((int)MathF.Round(width / 2f), (int)MathF.Round(height / 2f));
 
             // Angles
-            /*float yaw = cameraAngle[0];
-            float pitch = cameraAngle[1];*/
-            float yaw = rotationAngle;
-            float pitch = 0f;
+            float yaw = cameraAngle[0];
+            float pitch = cameraAngle[1];
+            /*float yaw = rotationAngle;
+            float pitch = 0f;*/
 
             // Forward
             Vector3 cameraForward = Vector3.Normalize(new(
@@ -76,7 +87,7 @@ class Program
             if (Raylib.IsKeyDown(KeyboardKey.D)) cameraPosition += 5f * deltaTime * cameraRight;
             if (Raylib.IsKeyDown(KeyboardKey.A)) cameraPosition -= 5f * deltaTime * cameraRight;
 
-            cameraPosition = new(5 * MathF.Cos(rotationAngle), 0f, 5 * MathF.Sin(rotationAngle));
+            //cameraPosition = new(5 * MathF.Cos(rotationAngle), 0f, 5 * MathF.Sin(rotationAngle));
             float scale = MathF.Tan(fov * 0.5f);
 
             Raylib.SetShaderValue(shader, cameraPositionLocation, cameraPosition, ShaderUniformDataType.Vec3);
@@ -94,9 +105,9 @@ class Program
             if (Raylib.IsKeyDown(KeyboardKey.J)) c[3] += 1f * deltaTime;
             if (Raylib.IsKeyDown(KeyboardKey.H)) c[3] -= 1f * deltaTime;
 
-            c[0] = -0.2f + 0.2f * MathF.Sin(2f * rotationAngle);
+            /*c[0] = -0.2f + 0.2f * MathF.Sin(2f * rotationAngle);
             c[1] = 0.7f + 0.1f * MathF.Sin(rotationAngle);
-            c[2] = 0.3f * MathF.Sin(0.5f * rotationAngle);
+            c[2] = 0.3f * MathF.Sin(0.5f * rotationAngle);*/
 
             Raylib.SetShaderValue(shader, cLocation, c, ShaderUniformDataType.Vec4);
 
@@ -115,7 +126,7 @@ class Program
 
             // Optional : print fps
             Console.WriteLine(Raylib.GetFPS());
-            rotationAngle += 0.01f;
+            //rotationAngle += 0.01f;
         }
 
         Raylib.UnloadShader(shader);
