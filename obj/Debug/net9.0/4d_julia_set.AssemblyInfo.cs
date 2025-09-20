@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("4d_julia_set")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1eef68b81f3bad875831dd176c6075f9ae8791e8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+256a9a2f45e5a9deea691c666c43d2d02d4934ff")]
 [assembly: System.Reflection.AssemblyProductAttribute("4d_julia_set")]
 [assembly: System.Reflection.AssemblyTitleAttribute("4d_julia_set")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

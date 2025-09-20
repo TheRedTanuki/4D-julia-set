@@ -9,9 +9,9 @@ out vec4 fragColor;
 // Basic variables
 uniform float escapeThreshold = 4.0;
 uniform float raymarchingPrecision = 0.00001;
-uniform float boundingSphereRadius = 100.0;
+uniform float boundingSphereRadiusSquared = 100.0;
 uniform int maxIteration = 10;
-uniform int maxSteps = 254;
+uniform int maxSteps = 100;
 
 // Julia's const
 uniform vec4 c = vec4(-0.2, 0.7, 0.0, 0.0);
@@ -26,6 +26,11 @@ uniform vec3 cameraUp = vec3(0.0, 0.0, 1.0);
 
 // Color Gradient
 uniform vec3 colorGradient[10];
+
+// Consts
+const vec4 colorBlack = vec4(0.0, 0.0, 0.0, 1.0);
+
+float minDist;
 
 //-- Quaternion operations --//
 
@@ -51,37 +56,6 @@ void iterateQuat(inout vec4 z, inout vec4 dz) {
     }
 }
 
-//-- Compute Normal --//
-
-vec3 computeNormal( in vec3 p){
-    vec4 z = vec4(p,0.0);
-
-    // identity derivative
-    vec4 J0 = vec4(1,0,0,0);
-    vec4 J1 = vec4(0,1,0,0);
-    vec4 J2 = vec4(0,0,1,0);
-    
-  	for(int i=0; i<maxIteration; i++)
-    {
-        vec4 cz = vec4(z.x, -z.yzw);
-        
-        // chain rule of jacobians (removed the 2 factor)
-        J0 = vec4( dot(J0,cz), dot(J0.xy,z.yx), dot(J0.xz,z.zx), dot(J0.xw,z.wx) );
-        J1 = vec4( dot(J1,cz), dot(J1.xy,z.yx), dot(J1.xz,z.zx), dot(J1.xw,z.wx) );
-        J2 = vec4( dot(J2,cz), dot(J2.xy,z.yx), dot(J2.xz,z.zx), dot(J2.xw,z.wx) );
-
-        // z -> z2 + c
-        z = quatSquare(z) + c; 
-        
-        if(dot(z, z)>4.0) break;
-    }
-    
-	vec3 v = vec3( dot(J0,z), 
-                   dot(J1,z), 
-                   dot(J2,z) );
-
-    return normalize( v );
-}
 //-- Distance estimation --//
 
 float distanceToJulia(vec3 p) {
@@ -92,31 +66,44 @@ float distanceToJulia(vec3 p) {
     return 0.5 * zNorm * log(zNorm) / length(dz);
 }
 
+//-- Compute Normal --//
+
+vec3 computeNormalApprox(vec3 p) {
+    float e = 0.001;
+    float d = distanceToJulia(p);
+    return normalize(vec3(
+        distanceToJulia(p + vec3(e,0,0)) - d,
+        distanceToJulia(p + vec3(0,e,0)) - d,
+        distanceToJulia(p + vec3(0,0,e)) - d
+    ));
+}
+
 //-- Raymarch --//
 
 vec4 raymarch(vec3 rayOrigin, vec3 rayDirection) {
-    float dist;
-    //float minDist = distanceToJulia(rayOrigin);
-    while (true) {
-        dist = distanceToJulia(rayOrigin);
-        //if (dist<minDist) minDist = dist;
+    float dist = distanceToJulia(rayOrigin);
+    minDist = dist;
+    for (int i = 0; i<maxSteps; ++i) {
+        if (i != 0) dist = distanceToJulia(rayOrigin);
+        if (dist<minDist) minDist = dist;
+
         if (dist < raymarchingPrecision) {
-           vec4 normal = vec4(computeNormal(rayOrigin.xyz), 1.0); // return a color based on the 3D coordinates
+           vec4 normal = vec4(computeNormalApprox(rayOrigin.xyz), 1.0); // return a color based on the 3D coordinates
            return normal;
         }
         
-        if (dot(rayOrigin, rayOrigin) > boundingSphereRadius * boundingSphereRadius) {
-            return vec4(0.0, 0.0, 0.0, 1.0);
+        if (dot(rayOrigin, rayOrigin) > boundingSphereRadiusSquared) {
+            return colorBlack;
         }
         
-        rayOrigin += rayDirection * dist;
+       rayOrigin += rayDirection * dist;
     }
 }
 
 //-- Colorize --//
 
 vec4 colorize(vec4 normal) {
-    if (normal.xyz == vec3(0.0, 0.0, 0.0)) return vec4(0.0, 0.0, 0.0, 1.0);
+    if (normal.xyz == vec3(0.0, 0.0, 0.0)) return colorBlack;
     
     float localBrightness = dot(normal.xyz, vec3(1.0, 0.0, 0.0));
     localBrightness = (localBrightness+1)/2;
@@ -125,8 +112,8 @@ vec4 colorize(vec4 normal) {
     int indice = int(floor(scaled));
     float t = fract(scaled);
 
-    vec3 colorA = colorGradient[indice];
-    vec3 colorB = colorGradient[indice+1];
+    vec3 colorA = colorGradient[min(indice, 9)];
+    vec3 colorB = colorGradient[min(indice+1, 9)];
 
     vec3 finalColor = mix(colorA, colorB, t);
 
@@ -144,5 +131,4 @@ void main() {
 
     // Throw the ray
     fragColor = colorize(raymarch(cameraPosition, rayDirection));
-    // fragColor = raymarch(cameraPosition, rayDirection);
 }
