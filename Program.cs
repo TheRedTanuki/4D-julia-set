@@ -26,18 +26,25 @@ class Program {
 
         float rotationAngle = 0f;
         int colorGradientLocation = Raylib.GetShaderLocation(shader, "colorGradient");
-        Vector3[] colorGradient = {
-            new (0.118f, 0.094f, 0.227f),
-            new (0.243f, 0.157f, 0.361f),
-            new (0.420f, 0.259f, 0.463f),
-            new (0.592f, 0.286f, 0.447f),
-            new (0.765f, 0.235f, 0.341f),
-            new (0.855f, 0.266f, 0.313f),
-            new (0.910f, 0.322f, 0.271f),
-            new (0.950f, 0.416f, 0.251f),
-            new (0.976f, 0.561f, 0.302f),
-            new (0.992f, 0.651f, 0.286f)
+
+        uint[] colorGradientHex = {
+            0x1E183A,
+            0x3E285C,
+            0x6B4276,
+            0x974972,
+            0xC33C57,
+            0xDA4450,
+            0xE85245,
+            0xF26A40,
+            0xF98F4D,
+            0xFDA649
         };
+
+        Vector3[] colorGradient = colorGradientHex.Select((hexColor) => new Vector3(
+            (float)(hexColor >> 16) / 255f,
+            (float)((hexColor & 0xFF00) >> 8) / 255f,
+            (float)(hexColor & 0xFF) / 255f
+            )).ToArray();
 
         Raylib.SetShaderValueV(shader, colorGradientLocation, colorGradient, ShaderUniformDataType.Vec3, colorGradient.Length);
 
